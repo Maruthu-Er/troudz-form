@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import logo1 from "../assets/images/logo1.svg";
+import VideoPlayer from './VideoPlayer'; 
+import logo from '../assets/images/favicon.ico';
+import CustomDropdown from './CustomDropdown';
 
 // SVG Icon Components
 const NameIcon = () => (
@@ -51,100 +54,6 @@ const EmailIcon = () => (
   </svg>
 );
 
-
-
-
-const EnhancedDropdown = ({ id, name, value, onChange, options, icon, label, required, disabled }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  
-  return (
-    <div className="form-group">
-      <label htmlFor={id} className="form-label">
-        {label} {required && <span className="required">*</span>}
-      </label>
-      <div 
-        ref={dropdownRef}
-        className={`enhanced-dropdown-wrapper ${isOpen ? 'open' : ''}`}
-      >
-        <div className="form-select-wrapper">
-          {icon}
-          <button
-            type="button"
-            id={`${id}-button`}
-            className="enhanced-dropdown-trigger"
-            onClick={() => !disabled && setIsOpen(!isOpen)}
-            aria-haspopup="listbox"
-            aria-expanded={isOpen}
-            aria-labelledby={`${id}-label ${id}-button`}
-            disabled={disabled}
-          >
-            {value ? options.find(opt => opt.value === value)?.label : 'Select an option'}
-            <span className="select-chevron" aria-hidden="true"></span>
-          </button>
-        </div>
-        
-        {isOpen && (
-          <ul 
-            className="enhanced-dropdown-menu"
-            role="listbox"
-            id={id}
-            aria-labelledby={`${id}-label`}
-            tabIndex={-1}
-          >
-            {options.map((option) => (
-              <li
-                key={option.value}
-                role="option"
-                className={`enhanced-dropdown-item ${value === option.value ? 'selected' : ''}`}
-                aria-selected={value === option.value}
-                onClick={() => {
-                  onChange({ target: { name, value: option.value } });
-                  setIsOpen(false);
-                }}
-              >
-                {option.label}
-              </li>
-            ))}
-          </ul>
-        )}
-        
-        {/* Hidden native select for form submission */}
-        <select
-          name={name}
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-          className="sr-only"
-          aria-hidden="true"
-          tabIndex={-1}
-        >
-          <option value="">Select an option</option>
-          {options.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  );
-};
-
-
-
 // REPLACE WITH YOUR ACTUAL GOOGLE APPS SCRIPT WEB APP URL
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqH1_6qS4P9h-72vmw2Nvj_6SkddbiH6KGu6iqjAKJgEzyERT4Q3VCJVIIDnjra30H/exec';
 
@@ -163,25 +72,25 @@ export default function AuditForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-
-   const msmeStatusOptions = [
-    { value: "registered", label: "Registered" },
-    { value: "not-registered", label: "Not Registered" },
-    { value: "in-process", label: "In Process" }
+  // Dropdown options
+  const msmeOptions = [
+    { value: 'registered', label: 'Registered' },
+    { value: 'not-registered', label: 'Not Registered' },
+    { value: 'in-process', label: 'In Process' }
   ];
 
-  const employeesOptions = [
-    { value: "1-10", label: "1-10" },
-    { value: "11-50", label: "11-50" },
-    { value: "51-100", label: "51-100" },
-    { value: "100+", label: "100+" }
+  const employeeOptions = [
+    { value: '1-10', label: '1-10' },
+    { value: '11-50', label: '11-50' },
+    { value: '51-100', label: '51-100' },
+    { value: '100+', label: '100+' }
   ];
 
   const timelineOptions = [
-    { value: "immediate", label: "Immediate (1 month)" },
-    { value: "short", label: "Short-term (1-3 months)" },
-    { value: "medium", label: "Medium-term (3-6 months)" },
-    { value: "long", label: "Long-term (6+ months)" }
+    { value: 'immediate', label: 'Immediate (1 month)' },
+    { value: 'short', label: 'Short-term (1-3 months)' },
+    { value: 'medium', label: 'Medium-term (3-6 months)' },
+    { value: 'long', label: 'Long-term (6+ months)' }
   ];
 
   const handleInputChange = (e) => {
@@ -246,7 +155,6 @@ export default function AuditForm() {
         body: JSON.stringify(formData),
       });
 
-      // Note: no-cors mode doesn't allow reading response, but submission works
       console.log('Form Data:', formData);
       
       setSuccessMessage('Thank you! Your request has been submitted. Redirecting to Troudz...');
@@ -278,7 +186,7 @@ export default function AuditForm() {
       <div className="form-wrapper">
         <div className="form-content">
           {/* Left Side - Hero Section */}
-              <div className="form-hero">
+          <div className="form-hero">
             <div className="hero-content">
               <div className="brand-section">
                 <img src={logo1} alt="Tamil Nadu Logo" className="troudz-logo"/>
@@ -307,6 +215,13 @@ export default function AuditForm() {
                 </div>
               </div>
             </div>
+
+            {/* Video Player Component */}
+            <VideoPlayer 
+              videoId="EaKihYESXvw" 
+              buttonText="Watch Our Story" 
+            />
+
             <div className="right-bottom-text">Powered by</div>
           </div>
 
@@ -351,76 +266,47 @@ export default function AuditForm() {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="msmeStatus" className="form-label">
-                  MSME Registration <span className="required">*</span>
-                </label>
-                <div className="form-select-wrapper">
-                  <StatusIcon />
-                  <select
-                    id="msmeStatus"
-                    name="msmeStatus"
-                    value={formData.msmeStatus}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                  >
-                    <option value="">Select Status</option>
-                    <option value="registered">Registered</option>
-                    <option value="not-registered">Not Registered</option>
-                    <option value="in-process">In Process</option>
-                  </select>
-                  <div className="select-chevron"></div>
-                </div>
-              </div>
+              {/* Custom Dropdown for MSME Status */}
+              <CustomDropdown
+                id="msmeStatus"
+                name="msmeStatus"
+                value={formData.msmeStatus}
+                onChange={handleInputChange}
+                options={msmeOptions}
+                icon={StatusIcon}
+                label="MSME Registration"
+                required={true}
+                disabled={isLoading}
+                placeholder="Select Status"
+              />
 
-              <div className="form-group">
-                <label htmlFor="employees" className="form-label">
-                  Number of Employees <span className="required">*</span>
-                </label>
-                <div className="form-select-wrapper">
-                  <UsersIcon />
-                  <select
-                    id="employees"
-                    name="employees"
-                    value={formData.employees}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                  >
-                    <option value="">Select Range</option>
-                    <option value="1-10">1-10</option>
-                    <option value="11-50">11-50</option>
-                    <option value="51-100">51-100</option>
-                    <option value="100+">100+</option>
-                  </select>
-                  <div className="select-chevron"></div>
-                </div>
-              </div>
+              {/* Custom Dropdown for Employees */}
+              <CustomDropdown
+                id="employees"
+                name="employees"
+                value={formData.employees}
+                onChange={handleInputChange}
+                options={employeeOptions}
+                icon={UsersIcon}
+                label="Number of Employees"
+                required={true}
+                disabled={isLoading}
+                placeholder="Select Range"
+              />
 
-              <div className="form-group">
-                <label htmlFor="timeline" className="form-label">
-                  Readiness Timeline <span className="required">*</span>
-                </label>
-                <div className="form-select-wrapper">
-                  <ClockIcon />
-                  <select
-                    id="timeline"
-                    name="timeline"
-                    value={formData.timeline}
-                    onChange={handleInputChange}
-                    className="form-select"
-                    disabled={isLoading}
-                  >
-                    <option value="">Select Timeline</option>
-                    <option value="immediate">Immediate (1 month)</option>
-                    <option value="short">Short-term (1-3 months)</option>
-                    <option value="medium">Medium-term (3-6 months)</option>
-                    <option value="long">Long-term (6+ months)</option>
-                  </select>
-                  <div className="select-chevron"></div>
-                </div>
-              </div>
+              {/* Custom Dropdown for Timeline */}
+              <CustomDropdown
+                id="timeline"
+                name="timeline"
+                value={formData.timeline}
+                onChange={handleInputChange}
+                options={timelineOptions}
+                icon={ClockIcon}
+                label="Readiness Timeline"
+                required={true}
+                disabled={isLoading}
+                placeholder="Select Timeline"
+              />
 
               <div className="form-group">
                 <label htmlFor="mobile" className="form-label">
@@ -493,8 +379,13 @@ export default function AuditForm() {
                 We respect your privacy. Your data is secure and confidential.
               </p>
             </div>
-            <div className="left-bottom-text">Troudz AI Lab</div>
+            <div className="left-bottom-text"><img src={logo} alt="Logo" /> Troudz AI Labs</div>
           </div>
+        </div>
+        
+        {/* Mobile Footer */}
+        <div className="mobile-footer">
+          Powered by <img src={logo} alt="Logo" /> Troudz AI Labs
         </div>
       </div>
     </div>
